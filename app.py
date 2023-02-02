@@ -19,6 +19,13 @@ def index():
 def login():
     username = request.form.get('username')
     password = request.form.get('password')
+    if "" in [username, password]:
+        error_str = "Одно из полей пустое"
+        return render_template('error_page.html', error=error_str)
     cursor.execute("SELECT * FROM service.users WHERE login=%s AND password=%s", (str(username), str(password)))
     records = list(cursor.fetchall())
-    return render_template('account.html', full_name=records[0][1])
+    if not records:
+        error_str = "Пользователя нет в БД"
+        return render_template('error_page.html', error=error_str)
+    return render_template('account.html', full_name=records[0][1], username=records[0][2], password=records[0][3])
+#http://localhost:5000/login/
